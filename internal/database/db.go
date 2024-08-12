@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-	"sync"
 
 	"github.com/jaysyanshar/godate-rest/config"
 	"gorm.io/gorm"
@@ -14,33 +13,29 @@ import (
 	"gorm.io/driver/sqlserver"
 )
 
-var once sync.Once
 var db *Database
 
 type Database struct {
 	*gorm.DB
 }
 
-func Connect(cfg *config.Config) (db *Database, err error) {
+// Connect to the database
+func Connect(cfg *config.Config) (*Database, error) {
+	if db != nil && db.isConnected() {
+		return db, nil
+	}
+
 	dialector, err := buildDialector(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	once.Do(func() {
-		// connect to the database using GORM
-		gormDb, e := gorm.Open(dialector, &gorm.Config{})
-		if e != nil {
-			err = fmt.Errorf("failed to open database: %w", e)
-			return
-		}
-
-		db = &Database{gormDb}
-	})
-
-	if err != nil {
-		return nil, err
+	gormDb, e := gorm.Open(dialector, &gorm.Config{})
+	if e != nil {
+		err = fmt.Errorf("failed to open database: %w", e)
+		return db, err
 	}
+	db = &Database{gormDb}
 
 	return db, nil
 }
@@ -52,6 +47,14 @@ func (db *Database) Close() error {
 		return fmt.Errorf("failed to get database instance: %w", err)
 	}
 	return sqlDB.Close()
+}
+
+func (db *Database) isConnected() bool {
+	sqlDB, err := db.DB.DB()
+	if err != nil {
+		return false
+	}
+	return sqlDB.Ping() == nil
 }
 
 func buildDialector(cfg *config.Config) (gorm.Dialector, error) {

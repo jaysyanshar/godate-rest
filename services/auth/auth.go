@@ -91,7 +91,7 @@ func generateJWTToken(accountID uint, issuer, jwtKey string) (string, error) {
 	claims := &jwt.StandardClaims{
 		ExpiresAt: time.Now().Add(24 * time.Hour).Unix(),
 		Issuer:    issuer,
-		Subject:   string(accountID),
+		Subject:   fmt.Sprint(accountID),
 	}
 
 	// Create the token

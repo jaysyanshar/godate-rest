@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"os"
 	"testing"
 
 	"github.com/jaysyanshar/godate-rest/config"
@@ -14,24 +13,34 @@ import (
 var (
 	cfg config.Config = config.Config{
 		DbDriver: "sqlite3",
-		DbName:   "test_db",
+		DbName:   ":memory:",
 	}
 	testDb *database.Database
 	repo   UserRepository
 )
 
-func init() {
-	testDb, _ = database.Connect(&cfg)
+func setup() {
+	var err error
+	testDb, err = database.Connect(&cfg)
+	if err != nil {
+		panic("failed to connect to database")
+	}
 	testDb.AutoMigrate(&dbmodel.Account{}, &dbmodel.User{})
 	repo = NewRepository(testDb)
 }
 
-func end() {
-	os.Remove("test_db")
-	testDb.Close()
+func teardown() {
+	if testDb != nil {
+		testDb.Migrator().DropTable(&dbmodel.Account{}, &dbmodel.User{})
+		testDb = nil
+	}
+	repo = nil
 }
 
 func TestInsertUser(t *testing.T) {
+	setup()
+	defer teardown()
+
 	// Create a new user
 	user := dbmodel.User{
 		FirstName: "John",
@@ -49,11 +58,12 @@ func TestInsertUser(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, user.FirstName, insertedUser.FirstName)
 	assert.Equal(t, user.LastName, insertedUser.LastName)
-
-	defer end()
 }
 
 func TestFindByAccountID(t *testing.T) {
+	setup()
+	defer teardown()
+
 	// Create a new user
 	user := dbmodel.User{
 		FirstName: "John",
@@ -71,6 +81,4 @@ func TestFindByAccountID(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, user.FirstName, insertedUser.FirstName)
 	assert.Equal(t, user.LastName, insertedUser.LastName)
-
-	defer end()
 }
