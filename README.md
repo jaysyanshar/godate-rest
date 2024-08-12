@@ -26,7 +26,7 @@ To get started with the GoDate REST API project, follow these steps:
 4. Start the server:
 
     ```shell
-    go run main.go
+    go run cmd/main.go
     ```
 
 5. The server should now be running on `http://localhost:8080`. You can test the API endpoints using tools like cURL or Postman.
