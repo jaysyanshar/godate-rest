@@ -8,7 +8,8 @@ import (
 
 type Config struct {
 	// application
-	Port string `mapstructure:"PORT"`
+	AppName string `mapstructure:"APP_NAME"`
+	AppPort string `mapstructure:"APP_PORT"`
 
 	// database
 	DbDriver   string `mapstructure:"DB_DRIVER"`
@@ -17,6 +18,9 @@ type Config struct {
 	DbUser     string `mapstructure:"DB_USER"`
 	DbPassword string `mapstructure:"DB_PASSWORD"`
 	DbName     string `mapstructure:"DB_NAME"`
+
+	// auth
+	JwtSecret string `mapstructure:"JWT_SECRET"`
 }
 
 var config *Config

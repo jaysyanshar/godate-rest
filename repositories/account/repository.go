@@ -12,6 +12,7 @@ import (
 type AccountRepository interface {
 	Insert(ctx context.Context, account dbmodel.Account) (uint, error)
 	FindByID(ctx context.Context, id uint) (dbmodel.Account, error)
+	FindByEmail(ctx context.Context, email string) (dbmodel.Account, error)
 }
 
 type repository struct {
@@ -38,6 +39,18 @@ func (r *repository) FindByID(ctx context.Context, id uint) (dbmodel.Account, er
 	if res.Error != nil {
 		if res.Error == gorm.ErrRecordNotFound {
 			return account, fmt.Errorf("account with ID %d not found", id)
+		}
+		return account, fmt.Errorf("failed to find account: %w", res.Error)
+	}
+	return account, nil
+}
+
+func (r *repository) FindByEmail(ctx context.Context, email string) (dbmodel.Account, error) {
+	var account dbmodel.Account
+	res := r.db.WithContext(ctx).Where("email = ?", email).First(&account)
+	if res.Error != nil {
+		if res.Error == gorm.ErrRecordNotFound {
+			return account, fmt.Errorf("account with email %s not found", email)
 		}
 		return account, fmt.Errorf("failed to find account: %w", res.Error)
 	}

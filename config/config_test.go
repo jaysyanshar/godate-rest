@@ -10,7 +10,7 @@ import (
 
 func TestConfigLoading(t *testing.T) {
 	// Create a temporary .env file with test values
-	envContent := "PORT=8080"
+	envContent := "APP_PORT=8080"
 	envFile := ".env.test"
 	err := os.WriteFile(envFile, []byte(envContent), 0644)
 	assert.NoError(t, err)
@@ -32,5 +32,5 @@ func TestConfigLoading(t *testing.T) {
 	}
 
 	// Assert the values are correctly loaded
-	assert.Equal(t, "8080", config.Port)
+	assert.Equal(t, "8080", config.AppPort)
 }
