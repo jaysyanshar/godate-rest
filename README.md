@@ -43,11 +43,25 @@ To get started with the GoDate REST API project, follow these steps:
 
 ### Unit Test
 
-Run the following command to perform unit test in the project scope:
+1. Run the following command to perform unit test in the project scope:
 
-```shell
-make test
-```
+    ```shell
+    make test
+    ```
+
+2. To generate a mock package for your interface, run this command:
+
+    ```shell
+    make mock path/to/your/file.go
+    ```
+
+    For example:
+
+    ```shell
+    make mock repositories/account/repository.go
+    ```
+
+    The command above will generate a mock file `repositories/account/repository_mock.go` with the same package as the real file.
 
 ### Database Migration
 

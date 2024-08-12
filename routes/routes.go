@@ -11,12 +11,14 @@ import (
 )
 
 type router struct {
+	Mid       middlewares.Middleware
 	Auth      auth.AuthController
 	Dashboard dashboard.DashboardController
 }
 
-func SetupRouter(auth auth.AuthController, dashboard dashboard.DashboardController) *mux.Router {
+func SetupRouter(mid middlewares.Middleware, auth auth.AuthController, dashboard dashboard.DashboardController) *mux.Router {
 	r := router{
+		Mid:       mid,
 		Auth:      auth,
 		Dashboard: dashboard,
 	}
@@ -24,7 +26,7 @@ func SetupRouter(auth auth.AuthController, dashboard dashboard.DashboardControll
 	apiRouter := router.PathPrefix("/api/v1").Subrouter()
 
 	// dashboard
-	router.HandleFunc("/", r.withMiddleware(r.Dashboard.HelloHandler, middlewares.JWTMiddleware)).Methods("GET")
+	router.HandleFunc("/", r.withMiddleware(r.Dashboard.HelloHandler, r.Mid.JWTMiddleware)).Methods("GET")
 
 	// auth
 	apiRouter.HandleFunc("/signup", r.Auth.SignUpHandler).Methods("POST")

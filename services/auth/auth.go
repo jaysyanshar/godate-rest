@@ -35,25 +35,28 @@ func NewService(cfg *config.Config, accountRepo account.AccountRepository, userR
 func (s *service) SignUp(ctx context.Context, req restmodel.SignUpRequest) (restmodel.SignUpResponse, error) {
 	var err error
 	if err = req.Validate(); err != nil {
-		return restmodel.SignUpResponse{Success: false, Message: err.Error()}, nil
+		return restmodel.SignUpResponse{Success: false, Message: err.Error()}, err
 	}
 
 	// encrypt password
 	account := req.ToAccount()
 	password, err := encryptPassword(account.Password)
+	if err != nil {
+		return restmodel.SignUpResponse{Success: false, Message: err.Error()}, err
+	}
 	account.Password = password
 
 	// Insert account
 	accountID, err := s.accountRepo.Insert(ctx, account)
 	if err != nil {
-		return restmodel.SignUpResponse{Success: false, Message: err.Error()}, nil
+		return restmodel.SignUpResponse{Success: false, Message: err.Error()}, err
 	}
 
 	// Insert user
 	user := req.ToUser(accountID)
 	_, err = s.userRepo.Insert(ctx, user)
 	if err != nil {
-		return restmodel.SignUpResponse{Success: false, Message: err.Error()}, nil
+		return restmodel.SignUpResponse{Success: false, Message: err.Error()}, err
 	}
 
 	return restmodel.SignUpResponse{Success: true, Message: "Account created successfully"}, nil
@@ -62,17 +65,17 @@ func (s *service) SignUp(ctx context.Context, req restmodel.SignUpRequest) (rest
 func (s *service) Login(ctx context.Context, req restmodel.LoginRequest) (restmodel.LoginResponse, error) {
 	account, err := s.accountRepo.FindByEmail(ctx, req.Email)
 	if err != nil {
-		return restmodel.LoginResponse{Success: false, Message: err.Error()}, nil
+		return restmodel.LoginResponse{Success: false, Message: err.Error()}, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(account.Password), []byte(req.Password))
 	if err != nil {
-		return restmodel.LoginResponse{Success: false, Message: fmt.Sprintf("Invalid email or password: %v", err)}, nil
+		return restmodel.LoginResponse{Success: false, Message: fmt.Sprintf("Invalid email or password: %v", err)}, err
 	}
 
 	jwtToken, err := generateJWTToken(account.ID, s.cfg.AppName, s.cfg.JwtSecret)
 	if err != nil {
-		return restmodel.LoginResponse{Success: false, Message: fmt.Sprintf("Failed to generate JWT Token: %v", err)}, nil
+		return restmodel.LoginResponse{Success: false, Message: fmt.Sprintf("Failed to generate JWT Token: %v", err)}, err
 	}
 	return restmodel.LoginResponse{Success: true, Message: "Login successful", Token: jwtToken}, nil
 }

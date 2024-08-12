@@ -8,9 +8,21 @@ import (
 	"github.com/jaysyanshar/godate-rest/config"
 )
 
-var cfg = config.Get()
+type Middleware interface {
+	JWTMiddleware(next http.Handler) http.Handler
+}
 
-func JWTMiddleware(next http.Handler) http.Handler {
+type middleware struct {
+	cfg *config.Config
+}
+
+func NewMiddleware(cfg *config.Config) Middleware {
+	return &middleware{
+		cfg: cfg,
+	}
+}
+
+func (m *middleware) JWTMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Get the JWT token from the request header
 		authHeader := r.Header.Get("X-Authorization")
@@ -33,7 +45,7 @@ func JWTMiddleware(next http.Handler) http.Handler {
 		// Parse the JWT token
 		token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 			// Provide the secret key or public key to verify the token
-			return []byte(cfg.JwtSecret), nil
+			return []byte(m.cfg.JwtSecret), nil
 		})
 
 		// Handle token parsing errors

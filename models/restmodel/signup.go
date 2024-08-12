@@ -42,6 +42,12 @@ func (req SignUpRequest) ToUser(accountID uint) dbmodel.User {
 }
 
 func (req SignUpRequest) Validate() error {
+	if req.Email == "" {
+		return fmt.Errorf(constant.ErrEmptyEmail)
+	}
+	if req.Password == "" {
+		return fmt.Errorf(constant.ErrEmptyPassword)
+	}
 	if req.FirstName == "" {
 		return fmt.Errorf(constant.ErrEmptyFirstName)
 	}

@@ -8,6 +8,7 @@ import (
 	authCtrl "github.com/jaysyanshar/godate-rest/controllers/auth"
 	dashboardCtrl "github.com/jaysyanshar/godate-rest/controllers/dashboard"
 	database "github.com/jaysyanshar/godate-rest/internal/database"
+	"github.com/jaysyanshar/godate-rest/middlewares"
 	"github.com/jaysyanshar/godate-rest/repositories/account"
 	"github.com/jaysyanshar/godate-rest/repositories/user"
 	"github.com/jaysyanshar/godate-rest/routes"
@@ -20,13 +21,15 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	middleware := middlewares.NewMiddleware(cfg)
+
 	accountRepo := account.NewRepository(db)
 	userRepo := user.NewRepository(db)
 	authService := authSvc.NewService(cfg, accountRepo, userRepo)
 	authController := authCtrl.NewController(authService)
 	dashboardController := dashboardCtrl.NewController()
 
-	router := routes.SetupRouter(authController, dashboardController)
+	router := routes.SetupRouter(middleware, authController, dashboardController)
 
 	log.Printf("Starting server at port %s\n", cfg.AppPort)
 	if err := http.ListenAndServe(":"+cfg.AppPort, router); err != nil {
