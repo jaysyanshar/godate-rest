@@ -35,6 +35,12 @@ To get started with the GoDate REST API project, follow these steps:
     cd godate-rest
     ```
 
+3. Download all dependencies:
+
+    ```shell
+    make download
+    ```
+
 ### Unit Test
 
 Run the following command to perform unit test in the project scope:
