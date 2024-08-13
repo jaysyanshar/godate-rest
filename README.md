@@ -123,12 +123,12 @@ To run the GoDate REST API project, follow these steps:
 
 ### Sign Up
 
-The Sign Up endpoint allows users to create a new account in the GoDate app. The endpoint accepts a `POST` method in the `/api/v1/signup` route.
+The Sign Up endpoint allows users to create a new account in the GoDate app. The endpoint accepts a `POST` method in the `/signup` route.
 
 Example CURL:
 
 ```shell
-curl --location --request POST 'http://localhost:8080/api/v1/signup' \
+curl --location --request POST 'http://localhost:8080/signup' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "email": "test@mail.com",
@@ -160,14 +160,14 @@ Example Error Response:
 
 ### Login
 
-The Login endpoint allows users to authenticate and log into their GoDate app account. The endpoint accepts a `POST` method in the `/api/v1/login` route. If the response is success, it returns a token which can be used to authorize login users. Once you get the token, put it on the next request as an HTTP header named `X-Authorization` with value `Bearer <your-token>`. 
+The Login endpoint allows users to authenticate and log into their GoDate app account. The endpoint accepts a `POST` method in the `/login` route. If the response is success, it returns a token which can be used to authorize login users. Once you get the token, put it on the next request as an HTTP header named `X-Authorization` with value `Bearer <your-token>`. 
 
 **Note**: Please pay attention to the `Bearer` prefix on the header's value.
 
 Example CURL:
 
 ```shell
-curl --location --request POST 'http://localhost:8080/api/v1/login' \
+curl --location --request POST 'http://localhost:8080/login' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "email": "test@mail.com",
