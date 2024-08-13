@@ -23,14 +23,13 @@ func SetupRouter(mid middlewares.Middleware, auth auth.AuthController, dashboard
 		Dashboard: dashboard,
 	}
 	router := mux.NewRouter()
-	apiRouter := router.PathPrefix("/api/v1").Subrouter()
 
 	// dashboard
 	router.HandleFunc("/", r.withMiddleware(r.Dashboard.HelloHandler, r.Mid.JWTMiddleware)).Methods("GET")
 
 	// auth
-	apiRouter.HandleFunc("/signup", r.Auth.SignUpHandler).Methods("POST")
-	apiRouter.HandleFunc("/login", r.Auth.LoginHandler).Methods("POST")
+	router.HandleFunc("/signup", r.Auth.SignUpHandler).Methods("POST")
+	router.HandleFunc("/login", r.Auth.LoginHandler).Methods("POST")
 	return router
 }
 
