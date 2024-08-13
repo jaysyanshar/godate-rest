@@ -9,7 +9,7 @@ import (
 	"github.com/jaysyanshar/godate-rest/config"
 	"github.com/jaysyanshar/godate-rest/models/restmodel"
 	"github.com/jaysyanshar/godate-rest/repositories/account"
-	"github.com/jaysyanshar/godate-rest/repositories/user"
+	"github.com/jaysyanshar/godate-rest/repositories/profile"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -21,14 +21,14 @@ type AuthService interface {
 type service struct {
 	cfg         *config.Config
 	accountRepo account.AccountRepository
-	userRepo    user.UserRepository
+	profileRepo profile.ProfileRepository
 }
 
-func NewService(cfg *config.Config, accountRepo account.AccountRepository, userRepo user.UserRepository) AuthService {
+func NewService(cfg *config.Config, accountRepo account.AccountRepository, profileRepo profile.ProfileRepository) AuthService {
 	return &service{
 		cfg:         cfg,
 		accountRepo: accountRepo,
-		userRepo:    userRepo,
+		profileRepo: profileRepo,
 	}
 }
 
@@ -52,9 +52,9 @@ func (s *service) SignUp(ctx context.Context, req restmodel.SignUpRequest) (rest
 		return restmodel.SignUpResponse{Success: false, Message: err.Error()}, err
 	}
 
-	// Insert user
-	user := req.ToUser(accountID)
-	_, err = s.userRepo.Insert(ctx, user)
+	// Insert profile
+	profile := req.ToProfile(accountID)
+	_, err = s.profileRepo.Insert(ctx, profile)
 	if err != nil {
 		return restmodel.SignUpResponse{Success: false, Message: err.Error()}, err
 	}

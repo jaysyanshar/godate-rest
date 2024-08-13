@@ -14,6 +14,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	dbClient.AutoMigrate(&dbmodel.Account{}, &dbmodel.User{})
+	dbClient.AutoMigrate(&dbmodel.Account{}, &dbmodel.Profile{})
 	defer dbClient.Close()
 }

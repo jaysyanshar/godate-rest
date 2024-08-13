@@ -9,7 +9,7 @@ import (
 	"github.com/jaysyanshar/godate-rest/models/dbmodel"
 	"github.com/jaysyanshar/godate-rest/models/restmodel"
 	"github.com/jaysyanshar/godate-rest/repositories/account"
-	"github.com/jaysyanshar/godate-rest/repositories/user"
+	"github.com/jaysyanshar/godate-rest/repositories/profile"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
@@ -18,27 +18,27 @@ import (
 var (
 	cfg         *config.Config
 	accountRepo *account.MockAccountRepository
-	userRepo    *user.MockUserRepository
+	profileRepo *profile.MockProfileRepository
 	authService AuthService
 )
 
 func setup(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	accountRepo = account.NewMockAccountRepository(ctrl)
-	userRepo = user.NewMockUserRepository(ctrl)
+	profileRepo = profile.NewMockProfileRepository(ctrl)
 
 	cfg = &config.Config{
 		AppName:   "GoDate",
 		JwtSecret: "jwtsecret",
 	}
 
-	authService = NewService(cfg, accountRepo, userRepo)
+	authService = NewService(cfg, accountRepo, profileRepo)
 }
 
 func teardown() {
 	cfg = nil
 	accountRepo = nil
-	userRepo = nil
+	profileRepo = nil
 	authService = nil
 }
 
@@ -71,7 +71,7 @@ func TestService_SignUp(t *testing.T) {
 			},
 			mockSetup: func() {
 				accountRepo.EXPECT().Insert(ctx, gomock.Any()).Return(uint(1), nil)
-				userRepo.EXPECT().Insert(gomock.Any(), gomock.Any()).Return(uint(1), nil)
+				profileRepo.EXPECT().Insert(gomock.Any(), gomock.Any()).Return(uint(1), nil)
 			},
 			expectedError: false,
 		},
@@ -103,7 +103,7 @@ func TestService_SignUp(t *testing.T) {
 			expectedError: true,
 		},
 		{
-			name: "user insert failed",
+			name: "profile insert failed",
 			req: restmodel.SignUpRequest{
 				Email:     "testuser@mail.com",
 				Password:  "testpassword",
@@ -117,7 +117,7 @@ func TestService_SignUp(t *testing.T) {
 			},
 			mockSetup: func() {
 				accountRepo.EXPECT().Insert(ctx, gomock.Any()).Return(uint(1), nil)
-				userRepo.EXPECT().Insert(gomock.Any(), gomock.Any()).Return(uint(0), assert.AnError)
+				profileRepo.EXPECT().Insert(gomock.Any(), gomock.Any()).Return(uint(0), assert.AnError)
 			},
 			expectedError: true,
 		},

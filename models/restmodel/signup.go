@@ -30,9 +30,9 @@ func (req SignUpRequest) ToAccount() dbmodel.Account {
 	}
 }
 
-func (req SignUpRequest) ToUser(accountID uint) dbmodel.User {
+func (req SignUpRequest) ToProfile(accountID uint) dbmodel.Profile {
 	birthDate, _ := time.Parse("2006-01-02", req.BirthDate)
-	return dbmodel.User{
+	return dbmodel.Profile{
 		AccountID: accountID,
 		FirstName: req.FirstName,
 		LastName:  req.LastName,

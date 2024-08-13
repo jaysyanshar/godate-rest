@@ -10,7 +10,7 @@ import (
 	database "github.com/jaysyanshar/godate-rest/internal/database"
 	"github.com/jaysyanshar/godate-rest/middlewares"
 	"github.com/jaysyanshar/godate-rest/repositories/account"
-	"github.com/jaysyanshar/godate-rest/repositories/user"
+	"github.com/jaysyanshar/godate-rest/repositories/profile"
 	"github.com/jaysyanshar/godate-rest/routes"
 	authSvc "github.com/jaysyanshar/godate-rest/services/auth"
 )
@@ -24,8 +24,8 @@ func main() {
 	middleware := middlewares.NewMiddleware(cfg)
 
 	accountRepo := account.NewRepository(db)
-	userRepo := user.NewRepository(db)
-	authService := authSvc.NewService(cfg, accountRepo, userRepo)
+	profileRepo := profile.NewRepository(db)
+	authService := authSvc.NewService(cfg, accountRepo, profileRepo)
 	authController := authCtrl.NewController(authService)
 	dashboardController := dashboardCtrl.NewController()
 

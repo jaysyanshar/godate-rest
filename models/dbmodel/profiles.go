@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type User struct {
+type Profile struct {
 	gorm.Model
 	AccountID uint      `json:"account_id" gorm:"not null;index"`
 	Account   Account   `gorm:"foreignKey:AccountID;references:ID"`

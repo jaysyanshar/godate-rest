@@ -25,12 +25,12 @@ func setup() {
 	if err != nil {
 		panic("failed to connect to database")
 	}
-	testDb.AutoMigrate(&dbmodel.Account{}, &dbmodel.User{})
+	testDb.AutoMigrate(&dbmodel.Account{}, &dbmodel.Profile{})
 	repo = NewRepository(testDb)
 }
 
 func teardown() {
-	testDb.Migrator().DropTable(&dbmodel.Account{}, &dbmodel.User{})
+	testDb.Migrator().DropTable(&dbmodel.Account{}, &dbmodel.Profile{})
 	testDb.Close()
 	testDb = nil
 	repo = nil
